@@ -6,15 +6,19 @@ using System.Threading.Tasks;
 
 namespace Farmen
 {
-    internal class Entity
+    internal abstract class Entity
     {
         public int Id { get; set; }
         public static int nextId = 1;
+        public string Name { get; set; }
 
-        public Entity()
+        public Entity(string name)
         {
             Id = nextId;
             nextId++;
+            Name = name;
         }
+
+        public abstract void GetDescription();       
     }
 }

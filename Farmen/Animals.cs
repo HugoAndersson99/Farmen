@@ -10,19 +10,18 @@ namespace Farmen
     {
         public string Species { get; set; }
         public string CropTypes { get; set; }
-
-        public Animals(string species, string croptypes)
+        
+        
+        public Animals(string name, string croptypes) :base(name)
         {
-            Id = nextId;
-            Species = species;
+            Species = name;
             CropTypes = croptypes;
         }
 
-        public void AnimalsInfo()
+        public override void GetDescription()
         {
-            string AnimalsInfo = "Animal Id: " + Id + "Specie: " + Species + " Crop type: " + CropTypes;
-            Console.WriteLine(AnimalsInfo);
+            string completeString = "Animal Id: " + Id + " | Specie: " + Species + " | Crop type: " + CropTypes;
+            Console.WriteLine(completeString);
         }
     }
-
 }

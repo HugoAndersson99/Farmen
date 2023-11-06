@@ -8,142 +8,234 @@ namespace Farmen
 {
     internal class CropsManager
     {
-        List<Crops> cropsList = new List<Crops>();
+        public Dictionary<int, Crops> cropsDic = new Dictionary<int, Crops> ();
+        public WorkerManager workerManager;
 
         public CropsManager()
         {
-            cropsList.Add(new Crops("Grass", 100));
-            cropsList.Add(new Crops("Hay", 250));
-            cropsList.Add(new Crops("Corn", 100));
-            cropsList.Add(new Crops("Carrot", 80));
-              
+            Crops grass = new Crops("Grass", 100);
+            cropsDic.Add(grass.Id, grass);
+            Crops hay = new Crops("Hay", 250);
+            cropsDic.Add(hay.Id, hay);
+            Crops corn = new Crops("Corn", 100);
+            cropsDic.Add(corn.Id, corn);
+            Crops carrot = new Crops("Carrot", 80);
+            cropsDic.Add(carrot.Id, carrot);
+
         }
 
-
-
-        private void AddCrop()
+        public Crops GetCropById()
         {
+            Console.WriteLine("Which crop? Choose by ID.");
+            ViewCrops();
+            string idToGet = Console.ReadLine();
             try
             {
-                Console.WriteLine("What crop type would you like to add?");
-                string cropType = Console.ReadLine();
-                foreach (Crops crops in cropsList)
+                int id = Convert.ToInt32(idToGet);
+                foreach (Crops crops in cropsDic.Values)
                 {
-                    if (cropType == crops.CropType)
+                    if (crops.Id == id)
                     {
-                        Console.WriteLine("How many crops would you like to add?");
-                        int input = int.Parse(Console.ReadLine());
-                        crops.Quantity += input;
-                        Console.WriteLine("Crops quantity: " + crops.Quantity);
-                    }
-                    else if (cropType != crops.CropType)
-                    {
-                        Console.WriteLine("How many crops would like like to add of this kind?");
-                        int input = int.Parse(Console.ReadLine());
-                        cropsList.Add(new Crops(cropType, input));
-                        Console.WriteLine(input + " Crops was sucessfully added of the kind " + cropType);
+                        return crops;
                     }
                 }
-               
 
-                
             }
-
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
+                Console.WriteLine("Write numbers next time.");
+                Console.WriteLine("Press ENTER to continue...");
+                Console.ReadKey();
             }
+            return null;
         }
 
-        public void ViewCrops()
+        private void AddCrop(Dictionary<int, Worker> workers)
         {
-            foreach (Crops crops in cropsList)
+            double multiply = 1.5;
+            Console.WriteLine("Name the crop type you would like to add.");
+            string cropName = Console.ReadLine();
+            if (cropName == "" || cropName == " ")
             {
-                crops.CropsInfo();
+                Console.WriteLine("The crop must have a crop type.");
+                Console.WriteLine("Press ENTER to continue...");
+                Console.ReadKey();
+                return;
             }
-        }
-
-        public void RemoveCrop()
-        {
-            Console.WriteLine("What crop would you like to remove? ");
-            
-            foreach (Crops crops in cropsList)
-            {
-                crops.CropsInfo();
-            }
-            Console.WriteLine("Write the id of the crop you want to remove");
-            int id;
+            Console.WriteLine("Enter number of crops you would like to add.");
             try
             {
-                id = Convert.ToInt32(Console.ReadLine());
-                foreach (Crops crops in cropsList)
+                int cropQuantity = int.Parse(Console.ReadLine());
+                Console.WriteLine("Which worker do you want to add the crop? Choose by ID.");
+                foreach (Worker worker in workers.Values)
                 {
-                    if (id == crops.Id)
+                    worker.GetDescription();
+                }
+                int workerId = int.Parse(Console.ReadLine());
+                if (!workers.ContainsKey(workerId))
+                {
+                    Console.WriteLine("There is no such worker");
+                    Console.WriteLine("Press ENTER to continue...");
+                    Console.ReadKey();
+                    return;
+                }
+
+                Worker chosenWorker = workers[workerId];
+                foreach (Crops crop in cropsDic.Values)
+                {
+                    if (cropName == crop.CropType)
                     {
-                        cropsList.Remove(crops);
+                        Console.WriteLine("Adding to already existing crop " + cropName);
+                        if (chosenWorker.CropSpeciality == crop.CropType)
+                        {
+                            double newCropQuantity = (cropQuantity * multiply);
+                            crop.Quantity += newCropQuantity;
+                            Console.WriteLine("This worker had the crop as its speciality!");
+                            Console.WriteLine("Added " + newCropQuantity + " to " + crop.CropType);
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadKey();
+                            break;
+                        }
+                        else
+                        {
+                            crop.Quantity += cropQuantity;
+                            Console.WriteLine("Added " + cropQuantity + " to " + crop.CropType);
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                    }
+                    else if (cropName != crop.CropType && cropName != "")
+                    {
+                        Console.WriteLine("Adding new crop " + cropName);
+                        Crops crops = new Crops(cropName, cropQuantity);
+                        cropsDic.Add(crops.Id, crops);
+                        if (crops.CropType == chosenWorker.CropSpeciality)
+                        {
+                            double newCropQuantity = (cropQuantity * multiply);
+                            crops.Quantity = newCropQuantity;
+                            Console.WriteLine("This worker had the crop as its speciality!");
+                            Console.WriteLine("Added " + newCropQuantity + " to " + crops.CropType);
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadKey();
+                            break;
+                        }
+                        else
+                        {
+
+                            Console.WriteLine("Added " + cropQuantity + " to " + crops.CropType + ".");
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadKey();
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("The crop must have a name or amount.");
+                        Console.WriteLine("Press ENTER to continue...");
+                        Console.ReadKey();
+                        break;
                     }
                 }
             }
+            catch
+            {
+                Console.WriteLine("Something went wrong.");
+                Console.WriteLine("Press ENTER to continue...");
+                Console.ReadKey();
+            }
+
+        }
+
+        private void ViewCrops()
+        {
+            foreach (Crops crops in cropsDic.Values)
+            {
+                crops.GetDescription();
+            }
+        }
+
+        private void RemoveCrop()
+        {
+            foreach (Crops crops in cropsDic.Values)
+            {
+                crops.GetDescription();
+            }
+
+            Console.WriteLine("Select the crop you would like to remove. Select by ID.");
+
+            try 
+            {
+                int id = int.Parse(Console.ReadLine());
+                if (cropsDic.ContainsKey(id)) 
+                {
+                    Crops crops = cropsDic[id];
+                    Console.WriteLine("Crop " + id + " " + crops.CropType + " has successfully been removed.");
+                    cropsDic.Remove(id);
+                    Console.WriteLine("Press ENTER to continue...");
+                    Console.ReadKey();
+                }
+            }
+
             catch 
-            { 
-                
-            }
-
-                
+            {
+                Console.WriteLine("Something went wrong.");
+                Console.WriteLine("Press ENTER to continue...");
+                Console.ReadKey();
+            }          
         }
 
-
-
-        public void ManageCrops()
+        public void ManageCrops(Dictionary<int, Worker> work)
         {
             
-            string[] cropsOptions = new string[] { "View crops\t", "Add crop\t", "Remove crop\t", "List crops\t", "Back to main menu\t" };
+            string[] cropsOptions = new string[] { "View crops\t", "Add crop\t", "Remove crop\t",  "Back to main menu\t" };
             int menuSelect = 0;
 
             while (true)
-            {
+            { 
+                Console.Clear();
                 if (menuSelect == 0)
                 {
-                    
+                    Console.WriteLine("Here you can manage the crops!");
+                    Console.WriteLine("Choose what you would like to do");
                     Console.WriteLine(cropsOptions[0] + " <---");
                     Console.WriteLine(cropsOptions[1]);
                     Console.WriteLine(cropsOptions[2]);
                     Console.WriteLine(cropsOptions[3]);
-                    Console.WriteLine(cropsOptions[4]);
+                    
                 }
                 else if (menuSelect == 1)
                 {
+                    Console.WriteLine("Here you can manage the crops!");
+                    Console.WriteLine("Choose what you would like to do");
                     Console.WriteLine(cropsOptions[0]);
                     Console.WriteLine(cropsOptions[1] + " <---");
                     Console.WriteLine(cropsOptions[2]);
                     Console.WriteLine(cropsOptions[3]);
-                    Console.WriteLine(cropsOptions[4]);
+                    
                 }
                 else if (menuSelect == 2)
                 {
+                    Console.WriteLine("Here you can manage the crops!");
+                    Console.WriteLine("Choose what you would like to do");
                     Console.WriteLine(cropsOptions[0]);
                     Console.WriteLine(cropsOptions[1]);
                     Console.WriteLine(cropsOptions[2] + " <---");
                     Console.WriteLine(cropsOptions[3]);
-                    Console.WriteLine(cropsOptions[4]);
+                    
                 }
                 else if (menuSelect == 3)
                 {
+                    Console.WriteLine("Here you can manage the crops!");
+                    Console.WriteLine("Choose what you would like to do");
                     Console.WriteLine(cropsOptions[0]);
                     Console.WriteLine(cropsOptions[1]);
                     Console.WriteLine(cropsOptions[2]);
                     Console.WriteLine(cropsOptions[3] + " <---");
-                    Console.WriteLine(cropsOptions[4]);
+                    
                 }
-                else if (menuSelect == 4)
-                {
-                    Console.WriteLine(cropsOptions[0]);
-                    Console.WriteLine(cropsOptions[1]);
-                    Console.WriteLine(cropsOptions[2]);
-                    Console.WriteLine(cropsOptions[3]);
-                    Console.WriteLine(cropsOptions[4] + " <---");
-                }
-
+                
                 var keyPressed = Console.ReadKey();
 
                 if (keyPressed.Key == ConsoleKey.DownArrow && menuSelect != cropsOptions.Length - 1)
@@ -161,24 +253,19 @@ namespace Farmen
                     {
                         case 0:
                             ViewCrops();
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadKey();
                             break;
                         case 1:
-                            AddCrop();
+                            AddCrop(work);
                             break;
                         case 2:
                            RemoveCrop();
                             break;
                         case 3:
-                            ViewCrops();
-                            break;
-                        case 4:
                             return;
-                            break;
-
                     }
                 }
-
-
             }
         }
     }

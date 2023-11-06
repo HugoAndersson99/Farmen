@@ -10,9 +10,21 @@ namespace Farmen
     {
         CropsManager cropsManager = new CropsManager();
         AnimalManager animalManager = new AnimalManager();
+        BuildingManager buildingManager = new BuildingManager();
+        WorkerManager workerManager = new WorkerManager();
+
+        public Farm()
+        {
+            animalManager.buildingManager = buildingManager;
+            animalManager.workerManager = workerManager;
+            cropsManager.workerManager = workerManager;    
+            buildingManager.animalManager = animalManager;
+        }
+
         public void MainMenu()
         {
-            string[] menuOptions = new string[] { "Manage animals\t", "Manage Crops\t", "Leave\t" };
+            animalManager.cropsManager = cropsManager;
+            string[] menuOptions = new string[] { "Manage Animals\t", "Manage Crops\t","Manage Buildings\t","Manage Workers", "Leave\t" };
             int menuSelect = 0;
 
             while (true)
@@ -26,6 +38,8 @@ namespace Farmen
                     Console.WriteLine(menuOptions[0] + " <---");
                     Console.WriteLine(menuOptions[1]);
                     Console.WriteLine(menuOptions[2]);
+                    Console.WriteLine(menuOptions[3]);
+                    Console.WriteLine(menuOptions[4]);
                 }
                 else if (menuSelect == 1)
                 {
@@ -34,6 +48,8 @@ namespace Farmen
                     Console.WriteLine(menuOptions[0]);
                     Console.WriteLine(menuOptions[1] + " <---");
                     Console.WriteLine(menuOptions[2]);
+                    Console.WriteLine(menuOptions[3]);
+                    Console.WriteLine(menuOptions[4]);
                 }
                 else if (menuSelect == 2)
                 {
@@ -42,6 +58,28 @@ namespace Farmen
                     Console.WriteLine(menuOptions[0]);
                     Console.WriteLine(menuOptions[1]);
                     Console.WriteLine(menuOptions[2] + " <---");
+                    Console.WriteLine(menuOptions[3]);
+                    Console.WriteLine(menuOptions[4]);
+                }
+                else if (menuSelect == 3)
+                {
+                    Console.WriteLine("Hello and welcome to The Farm!");
+                    Console.WriteLine("Choose what you would like to do: ");
+                    Console.WriteLine(menuOptions[0]);
+                    Console.WriteLine(menuOptions[1]);
+                    Console.WriteLine(menuOptions[2]);
+                    Console.WriteLine(menuOptions[3] + " <---");
+                    Console.WriteLine(menuOptions[4]);
+                }
+                else if (menuSelect == 4)
+                {
+                    Console.WriteLine("Hello and welcome to The Farm!");
+                    Console.WriteLine("Choose what you would like to do: ");
+                    Console.WriteLine(menuOptions[0]);
+                    Console.WriteLine(menuOptions[1]);
+                    Console.WriteLine(menuOptions[2]);
+                    Console.WriteLine(menuOptions[3]);
+                    Console.WriteLine(menuOptions[4] + " <---");
                 }
                 var keyPressed = Console.ReadKey();
 
@@ -55,23 +93,26 @@ namespace Farmen
                 }
                 else if (keyPressed.Key == ConsoleKey.Enter)
                 {
-
                     switch (menuSelect)
                     {
                         case 0:
-                            animalManager.ManageAnimals();
+                            animalManager.ManageAnimals(buildingManager.GetBuilding());
                             break;
                         case 1:
-                            cropsManager.ManageCrops();
+                            cropsManager.ManageCrops(workerManager.GetWorker());                   
                             break;
                         case 2:
+                            buildingManager.BuildingMenu(animalManager.GetAnimals(), animalManager.GetAnimalsWithoutBuildings());
+                            break;
+                        case 3:
+                            workerManager.WorkerMenu();
+                            break;
+                        case 4:
                             Environment.Exit(0);
                             break;
-
                     }
                 }
             }
-
         }
     }
 }

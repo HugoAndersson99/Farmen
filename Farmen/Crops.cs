@@ -10,19 +10,30 @@ namespace Farmen
     internal class Crops : Entity
     {
         public string CropType {  get; set; }
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
         
-        public Crops (string cropType, int quantity)
+        public Crops (string name, double quantity) :base(name)
         { 
-            Id = nextId++;
-            CropType = cropType;
+            
+            CropType = name;
             Quantity = quantity;
         }
 
-        public void CropsInfo()
+        public bool GetCrop(int Amount)
         {
-            string cropsInfo = "Crop id: " + Id + " Crop type: " + CropType + " Crop quantity: " + Quantity;
-            Console.WriteLine(cropsInfo);
+            if (Amount > Quantity)
+            {
+                return false;
+            }
+            Quantity -= Amount;
+            return true;
+        }
+
+        public override void GetDescription()
+        {
+            string completeString = "Crop ID: " + Id + " | Crop type: " + CropType + " | Quantity: " + Quantity;
+            Console.WriteLine(completeString);
+
         }
 
     }
